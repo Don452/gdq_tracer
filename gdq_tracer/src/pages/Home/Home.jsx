@@ -105,17 +105,26 @@ export default function Home() {
         <div style={{ display: 'flex', marginTop: '4px' }}><button type="button" onClick={() => setRows([...rows, { id: Date.now() + Math.random(), tag: '', tkt: '', first: '', last: '', phone: '', status: 'Open' }])}>＋ Row</button><button type="submit" style={{ background: '#28a745', color: '#fff', marginLeft: 'auto' }}>Save</button></div>
       </form>
 
-       <div style={{ background: '#edf2f7', padding: '4px', marginBottom: '4px', display: 'flex', gap: '2px', alignItems: 'center', borderRadius: '3px' }}>
-    <input type="date" value={pDt} onChange={e => setPDt(e.target.value)} style={{ padding: '2px', border: '1px solid #ccc', borderRadius: '3px' }} />
-    <button type="button" onClick={() => setPDt('')}>Clear</button>
-    <select value={pSt} onChange={e => setPSt(e.target.value)} style={{ marginLeft: '6px' }}><option value="All">Status</option>...</select>
-    <select value={pAg} onChange={e => setPAg(e.target.value)}><option value="All">Agent</option>...</select>
-    
-    {/* 📂 BIND THE ONCLICK TRIGGER HERE: */}
-    <button type="button" onClick={print} style={{ background: '#007bff', color: 'white', border: 'none', padding: '2px 8px', borderRadius: '3px', cursor: 'pointer' }}>Print</button>
-    
-    <button type="button" onClick={excel} style={{ background: '#107c41', color: '#fff', border: 'none', padding: '2px 6px', borderRadius: '3px' }}>Excel</button>
-  </div>
+          <div style={{ background: '#edf2f7', padding: '4px', marginBottom: '4px', display: 'flex', gap: '2px', alignItems: 'center', borderRadius: '3px' }}>
+        <input type="date" value={pDt} onChange={e => setPDt(e.target.value)} style={{ padding: '2px', border: '1px solid #ccc', borderRadius: '3px' }} />
+        <button type="button" onClick={() => setPDt('')}>Clear</button>
+        
+        {/* 📊 FIXED: Status options render dynamically matching system criteria keys */}
+        <select value={pSt} onChange={e => setPSt(e.target.value)} style={{ marginLeft: '6px' }}>
+          <option value="All">All Statuses</option>
+          {Object.keys(TM).map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
+        
+        {/* 📊 FIXED: Maps initials out of the live global register matrix keys cleanly */}
+        <select value={pAg} onChange={e => setPAg(e.target.value)}>
+          <option value="All">All Agents</option>
+          {[...new Set(Object.values(agents))].map(c => <option key={c} value={c}>{c}</option>)}
+        </select>
+        
+        <button type="button" onClick={print} style={{ background: '#007bff', color: 'white', border: 'none', padding: '2px 8px', borderRadius: '3px', cursor: 'pointer', fontWeight: 'bold' }}>Print</button>
+        <button type="button" onClick={excel} style={{ background: '#107c41', color: '#fff', border: 'none', padding: '2px 6px', borderRadius: '3px', cursor: 'pointer' }}>Excel</button>
+      </div>
+
 
 
       <div style={{ display: 'flex', gap: '4px', marginBottom: '5px' }}>
