@@ -106,7 +106,7 @@ export default function Home() {
   return (
     <div style={{ padding: '8px', fontFamily: 'sans-serif', maxWidth: '1200px', margin: '0 auto', fontSize: '11px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', marginBottom: '5px' }}>
-        <h3>🧳 Local Tracer ({agents[usr] || '...'})</h3>
+        <h3>🧳 GDQ TRACER ({agents[usr] || '...'})</h3>
         <button onClick={() => nav('/')} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '4px' }}>Logout</button>
       </div>
 
@@ -121,12 +121,15 @@ export default function Home() {
             <button type="button" onClick={() => setRows(rows.filter(x => x.id !== r.id))} disabled={rows.length === 1}>✕</button>
           </div>
         ))}
-        <div style={{ display: 'flex', marginTop: '4px' }}><button type="button" onClick={() => setRows([...rows, { id: Date.now() + Math.random(), tag: '', tkt: '', first: '', last: '', phone: '', status: 'Open' }])}>＋ Row</button><button type="submit" style={{ background: '#28a745', color: '#fff', marginLeft: 'auto' }}>Save</button></div>
+        <div style={{ display: 'flex', marginTop: '4px' }}>
+          <button type="button" onClick={() => setRows([...rows, { id: Date.now() + Math.random(), tag: '', tkt: '', first: '', last: '', phone: '', status: 'Open' }])}>＋ Row</button>
+          <button type="submit" style={{ background: '#28a745', color: '#fff', marginLeft: 'auto' }}>Save</button>
+        </div>
       </form>
 
-          <div style={{ background: '#edf2f7', padding: '4px', marginBottom: '4px', display: 'flex', gap: '2px', alignItems: 'center', borderRadius: '3px' }}>
-        <input type="date" value={pDt} onChange={e => setPDt(e.target.value)} style={{ padding: '2px', border: '1px solid #ccc', borderRadius: '3px' }} />
-        <button type="button" onClick={() => setPDt('')}>Clear</button>
+        <div style={{ background: '#edf2f7', padding: '4px', marginBottom: '4px', display: 'flex', gap: '2px', alignItems: 'center', borderRadius: '3px' }}>
+          <input type="date" value={pDt} onChange={e => setPDt(e.target.value)} style={{ padding: '2px', border: '1px solid #ccc', borderRadius: '3px' }} />
+          <button type="button" onClick={() => setPDt('')}>Clear</button>
         
         {/* 📊 FIXED: Status options render dynamically matching system criteria keys */}
         <select value={pSt} onChange={e => setPSt(e.target.value)} style={{ marginLeft: '6px' }}>
@@ -162,12 +165,15 @@ export default function Home() {
             const em = (b.registered_by || '').toLowerCase().trim();
             return (
               <tr key={b.id} style={{ borderBottom: '1px solid #edf2f7' }}>
-                <td>{tc(b.tag_number)}</td>
-                <td>{b.ticket_number ? <span title={b.ticket_number} style={{ cursor: 'help', borderBottom: '1px dashed #4a5568', fontFamily: 'monospace' }}>{b.ticket_number.substring(0, 3)}...{b.ticket_number.substring(10)}</span> : 'N/A'}</td>
-                <td>{b.passenger_last_name}</td><td>{b.passenger_first_name}</td><td>{b.passenger_phone}</td><td>{new Date(b.created_at).toLocaleDateString()}</td>
-                <td><select value={b.status} onChange={e => setBags(p => p.map(x => x.id === b.id ? { ...x, status: e.target.value } : x))} style={{ background: TM[b.status] || '#eee', borderRadius: '4px' }}>{Object.keys(TM).map(s => <option key={s} value={s}>{s}</option>)}</select></td>
-                <td style={{ fontWeight: 'bold', color: '#2b6cb0' }}>{agents[em] || em.substring(0, 2).toUpperCase() || '...'}</td>
-                <td>{b.file_created ? 'Created' : <a href="https://desktop.worldtracer.aero/desktop/index.html#!/index/login" target="_blank" rel="noreferrer"><button type="button">Create File</button></a>}</td>
+                  <td>{tc(b.tag_number)}</td>
+                  <td>{b.ticket_number ? <span title={b.ticket_number} style={{ cursor: 'help', borderBottom: '1px dashed #4a5568', fontFamily: 'monospace' }}>{b.ticket_number.substring(0, 3)}...{b.ticket_number.substring(10)}</span> : 'N/A'}</td>
+                  <td>{b.passenger_last_name}</td><td>{b.passenger_first_name}</td><td>{b.passenger_phone}</td><td>{new Date(b.created_at).toLocaleDateString()}</td>
+                  <td><select value={b.status} onChange={e => setBags(p => p.map(x => x.id === b.id ? { ...x, status: e.target.value } : x))} style={{ background: TM[b.status] || '#eee', borderRadius: '4px' }}>{Object.keys(TM).map(s => <option key={s} value={s}>{s}</option>)}</select></td>
+                  <td style={{ fontWeight: 'bold', color: '#2b6cb0' }}>{agents[em] || em.substring(0, 2).toUpperCase() || '...'}</td>
+                  <td>{b.file_created ? 'Created' : <a href="https://desktop.worldtracer.aero/desktop/index.html#!/index/login" target="_blank" rel="noreferrer">
+                 <button type="button" style={{color: 'green'}}>Create File</button>
+                </a>}
+                </td>
                 <td style={{ textAlign: 'center' }}><input type="checkbox" checked={!!b.file_created} onChange={e => setBags(p => p.map(x => x.id === b.id ? { ...x, file_created: e.target.checked } : x))} /></td>
                 <td><button onClick={async () => { await supabase.from('baggage_record').update({ status: b.status, file_created: !!b.file_created }).eq('id', b.id); alert("Saved!"); sync(); }}>⚙️</button></td>
                 <td><button onClick={async () => { await supabase.from('baggage_record').delete().eq('id', b.id); sync(); }}>X</button></td>
