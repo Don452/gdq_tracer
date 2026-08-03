@@ -33,7 +33,7 @@ export default function Home() {
   const save = async (e) => {
     e.preventDefault();
     if (rows.some(r => !/^\d{13}$/.test(r.tkt))) return alert("Tickets must be 13 digits.");
-    await supabase.from('baggage_record').insert(rows.map(r => ({ tag_number: r.tag, ticket_number: r.tkt, passenger_first_name: r.first, passenger_last_name: r.last, passenger_phone: r.phone, status: r.status, registered_by: usr.toLowerCase().trim(), file_created: false })));
+    await supabase.from('baggage_record').insert(rows.map(r => ({ tag_number: r.tag, ticket_number: r.tkt,passenger_last_name: r.last,passenger_first_name: r.first, passenger_phone: r.phone, status: r.status, registered_by: usr.toLowerCase().trim(), file_created: false })));
     setRows([{ id: Date.now(), tag: '', tkt: '', first: '', last: '', phone: '', status: 'Open' }]);
     sync();
   };
@@ -61,7 +61,7 @@ export default function Home() {
           return `<tr>
             <td style="padding:6px;"><b>${b.tag_number || '-'}</b></td>
             <td style="padding:6px;font-family:monospace;">${b.ticket_number || '-'}</td>
-            <td style="padding:6px;">${b.passenger_first_name || ''} ${b.passenger_last_name || ''}</td>
+            <td style="padding:6px;">${b.passenger_last_name || ''} ${b.passenger_first_name || ''}</td>
             <td style="padding:6px;">${b.passenger_phone || '-'}</td>
             <td style="padding:6px;">${b.status || '-'}</td>
             <td style="padding:6px;font-weight:bold;color:#2b6cb0;">${agents[em] || em.substring(0,2).toUpperCase()}</td>
