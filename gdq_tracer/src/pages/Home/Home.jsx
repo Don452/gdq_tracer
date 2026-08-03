@@ -40,12 +40,34 @@ export default function Home() {
 
   const getFilt = () => bags.filter(b => (!pDt || b.created_at.startsWith(pDt)) && (pSt === 'All' || b.status === pSt) && (pAg === 'All' || !pAg || agents[b.registered_by?.toLowerCase().trim()] === pAg));
 
-  const print = () => {
-    const list = getFilt(); if (!list.length) return alert("No records.");
+   const print = () => {
+    const list = getFilt(); 
+    if (!list.length) return alert("No records.");
+    
     const w = window.open('', '_blank');
-    w.document.write(`<h2>Manifest</h2><table border="1" style="width:100%;border-collapse:collapse;font-size:12px;"><tr><th>Tag #</th><th>Ticket #</th><th>Name</th><th>Status</th><th>Agent</th></tr>${list.map(b => { const em = (b.registered_by || '').toLowerCase().trim(); return `<tr><td><b>${b.tag_number}</b></td><td>${b.ticket_number}</td><td>${b.passenger_first_name} ${b.passenger_last_name}</td><td>${b.status}</td><td>${agents[em] || em.substring(0,2).toUpperCase()}</td></tr>`; }).join('')}</table><script>setTimeout(()=>{window.print();window.close();},300);</script>`);
+    w.document.write(`
+      <h2>Manifest</h2>
+      <table border="1" style="width:100%;border-collapse:collapse;font-size:12px;font-family:sans-serif;">
+        <tr style="background:#f4f4f4;">
+          <th>Tag</th><th>Ticket</th><th>Name</th><th>Phone</th><th>Status</th><th>Agent</th>
+        </tr>
+        ${list.map(b => { 
+          const em = (b.registered_by || '').toLowerCase().trim(); 
+          return `<tr>
+            <td><b>${b.tag_number || '-'}</b></td>
+            <td>${b.ticket_number || '-'}</td>
+            <td>${b.passenger_first_name || ''} ${b.passenger_last_name || ''}</td>
+            <td>${b.passenger_phone || '-'}</td>
+            <td>${b.status || '-'}</td>
+            <td>${agents[em] || em.substring(0,2).toUpperCase()}</td>
+          </tr>`; 
+        }).join('')}
+      </table>
+      <script>setTimeout(()=>{window.print();window.close();},300);</script>
+    `);
     w.document.close();
   };
+
 
   const excel = () => {
     const list = getFilt(); if (!list.length) return alert("No records.");
@@ -78,12 +100,18 @@ export default function Home() {
         <div style={{ display: 'flex', marginTop: '4px' }}><button type="button" onClick={() => setRows([...rows, { id: Date.now() + Math.random(), tag: '', tkt: '', first: '', last: '', phone: '', status: 'Open' }])}>＋ Row</button><button type="submit" style={{ background: '#28a745', color: '#fff', marginLeft: 'auto' }}>Save</button></div>
       </form>
 
-      <div style={{ background: '#edf2f7', padding: '5px', marginBottom: '5px', display: 'flex', gap: '4px', alignItems: 'center' }}>
-        <input type="date" value={pDt} onChange={e => setPDt(e.target.value)} />
-        <select value={pSt} onChange={e => setPSt(e.target.value)}><option value="All">All Statuses</option>{Object.keys(TM).map(s => <option key={s} value={s}>{s}</option>)}</select>
-        <select value={pAg} onChange={e => setPAg(e.target.value)}><option value="All">All Agents</option>{[...new Set(Object.values(agents))].map(c => <option key={c} value={c}>{c}</option>)}</select>
-        <button type="button" onClick={print}>Print</button><button type="button" onClick={excel} style={{ background: '#107c41', color: '#fff' }}>Excel</button>
-      </div>
+       <div style={{ background: '#edf2f7', padding: '4px', marginBottom: '4px', display: 'flex', gap: '2px', alignItems: 'center', borderRadius: '3px' }}>
+    <input type="date" value={pDt} onChange={e => setPDt(e.target.value)} style={{ padding: '2px', border: '1px solid #ccc', borderRadius: '3px' }} />
+    <button type="button" onClick={() => setPDt('')}>Clear</button>
+    <select value={pSt} onChange={e => setPSt(e.target.value)} style={{ marginLeft: '6px' }}><option value="All">Status</option>...</select>
+    <select value={pAg} onChange={e => setPAg(e.target.value)}><option value="All">Agent</option>...</select>
+    
+    {/* 📂 BIND THE ONCLICK TRIGGER HERE: */}
+    <button type="button" onClick={print} style={{ background: '#007bff', color: 'white', border: 'none', padding: '2px 8px', borderRadius: '3px', cursor: 'pointer' }}>Print</button>
+    
+    <button type="button" onClick={excel} style={{ background: '#107c41', color: '#fff', border: 'none', padding: '2px 6px', borderRadius: '3px' }}>Excel</button>
+  </div>
+
 
       <div style={{ display: 'flex', gap: '4px', marginBottom: '5px' }}>
         <input placeholder="🔍 Search..." value={sch} onChange={e => setSch(e.target.value)} style={{ flex: 1 }} />
