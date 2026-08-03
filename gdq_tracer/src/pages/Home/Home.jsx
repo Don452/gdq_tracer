@@ -20,7 +20,15 @@ export default function Home() {
     if (b) setBags(b);
   };
 
-  useEffect(() => { supabase.auth.getUser().then(({ data }) => { if (data?.user) setUsr(data.user.email); sync(); }); }, []);
+  useEffect(() => {
+  const activeUser = localStorage.getItem('active_terminal_operator');
+  if (activeUser) {
+    setUsr(activeUser.toLowerCase().trim());
+    sync();
+  } else {
+    nav('/'); // Lock down unauthenticated routing blocks
+  }
+}, [nav]);
 
   const save = async (e) => {
     e.preventDefault();
