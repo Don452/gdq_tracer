@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css';
+import './index.css'; // 👈 Must be present at the top level
 import { supabase } from './supabaseClient';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
