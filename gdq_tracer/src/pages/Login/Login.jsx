@@ -22,12 +22,12 @@ export default function Login() {
 
   return (
     <div style={{ padding: '20px', fontFamily: 'sans-serif', maxWidth: '320px', margin: '80px auto', border: '1px solid #eee', borderRadius: '8px', background: '#f8f9fa', fontSize: '12px' }}>
-      <h3 style={{ margin: '0 0 12px 0', textAlign: 'center' }}>🔐 Workstation Username Login</h3>
+      <h3 style={{ margin: '0 0 12px 0', textAlign: 'center' }}>Login</h3>
       <form onSubmit={handleLogin} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
         <input placeholder="Username" value={user} onChange={e => setUser(e.target.value)} required style={{ padding: '7px', border: '1px solid #ccc', borderRadius: '4px' }} />
         <input type="password" placeholder="Password" value={pass} onChange={e => setPass(e.target.value)} required style={{ padding: '7px', border: '1px solid #ccc', borderRadius: '4px' }} />
         <button type="submit" style={{ background: '#007bff', color: '#fff', border: 'none', padding: '9px', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>Login</button>
-        <p style={{ textAlign: 'center', margin: '4px 0 0 0' }}>New Operator? <span onClick={() => nav('/signup')} style={{ color: '#28a745', cursor: 'pointer' }}>Create Account</span></p>
+        <p style={{ textAlign: 'center', margin: '4px 0 0 0' }}>New Agent? <span onClick={() => nav('/signup')} style={{ color: '#28a745', cursor: 'pointer' }}>Create Account</span></p>
       </form>
     </div>
   );
