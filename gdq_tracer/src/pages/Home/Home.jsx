@@ -38,7 +38,26 @@ export default function Home() {
     sync();
   };
 
-  const getFilt = () => bags.filter(b => (!pDt || b.created_at.startsWith(pDt)) && (pSt === 'All' || b.status === pSt) && (pAg === 'All' || !pAg || agents[b.registered_by?.toLowerCase().trim()] === pAg));
+    // 🔍 FIXED: Centralized calculation engine that updates BOTH your screen and your print manifests simultaneously
+  const getFilt = () => bags.filter(b => {
+    const em = (b.registered_by || '').toLowerCase().trim();
+    const localDateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('en-CA') : '';
+    
+    // Links your data streams directly onto your active drop down option pickers
+    const matchesDate = !pDt || localDateStr === pDt;
+    const matchesStatus = pSt === 'All' || b.status === pSt;
+    const matchesAgent = pAg === 'All' || !pAg || agents[em] === pAg;
+    
+    return matchesDate && matchesStatus && matchesAgent;
+  });
+
+  // 🔍 FIXED: Main UI visible table grid now listens to your text searches AND your option changes instantly
+  const fd = getFilt().filter(b => 
+    [b.tag_number, b.ticket_number, b.passenger_first_name, b.passenger_last_name].some(v => 
+      (v || '').toLowerCase().includes(sch.toLowerCase())
+    )
+  );
+
 
      const print = () => {
     const list = getFilt(); 
@@ -126,11 +145,15 @@ export default function Home() {
       </div>
 
 
-
-      <div style={{ display: 'flex', gap: '4px', marginBottom: '5px' }}>
-        <input placeholder="🔍 Search..." value={sch} onChange={e => setSch(e.target.value)} style={{ flex: 1 }} />
-        <select value={flt} onChange={e => setFlt(e.target.value)}><option value="All">All</option>{Object.keys(TM).map(s => <option key={s} value={s}>{s}</option>)}</select>
+      <div style={{ display: 'flex', gap: '2px', marginBottom: '4px' }}>
+        <input placeholder="🔍 Live Search Filter..." value={sch} onChange={e => setSch(e.target.value)} style={{ flex: 1, padding: '3px', border: '1px solid #ccc', borderRadius: '3px' }} />
+        {/* 📊 FIXED: Connects the bottom selection box directly to the centralized pSt state */}
+        <select value={pSt} onChange={e => setPSt(e.target.value)} style={{ padding: '2px' }}>
+          <option value="All">All Statuses</option>
+          {Object.keys(TM).map(s => <option key={s} value={s}>{s}</option>)}
+        </select>
       </div>
+
 
       <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #e2e8f0' }}>
         <thead><tr style={{ background: '#1a202c', color: '#fff' }}>{['Tag', 'Ticket', 'Last', 'First', 'Phone', 'Date', 'Status', 'Agent', 'WorldTracer', 'Created?', 'Save', 'Del'].map(h => <th key={h} style={{ padding: '4px', textAlign: 'left' }}>{h}</th>)}</tr></thead>
