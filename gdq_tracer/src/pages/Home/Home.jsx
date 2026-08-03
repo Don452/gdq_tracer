@@ -135,7 +135,7 @@ export default function Home() {
                 <td>{b.passenger_last_name}</td><td>{b.passenger_first_name}</td><td>{b.passenger_phone}</td><td>{new Date(b.created_at).toLocaleDateString()}</td>
                 <td><select value={b.status} onChange={e => setBags(p => p.map(x => x.id === b.id ? { ...x, status: e.target.value } : x))} style={{ background: TM[b.status] || '#eee', borderRadius: '4px' }}>{Object.keys(TM).map(s => <option key={s} value={s}>{s}</option>)}</select></td>
                 <td style={{ fontWeight: 'bold', color: '#2b6cb0' }}>{agents[em] || em.substring(0, 2).toUpperCase() || '...'}</td>
-                <td>{b.file_created ? '✅' : <a href="https://worldtracer.aero" target="_blank" rel="noreferrer"><button type="button">📁</button></a>}</td>
+                <td>{b.file_created ? '✅' : <a href="https://desktop.worldtracer.aero/desktop/index.html#!/index/login" target="_blank" rel="noreferrer"><button type="button">📁</button></a>}</td>
                 <td style={{ textAlign: 'center' }}><input type="checkbox" checked={!!b.file_created} onChange={e => setBags(p => p.map(x => x.id === b.id ? { ...x, file_created: e.target.checked } : x))} /></td>
                 <td><button onClick={async () => { await supabase.from('baggage_record').update({ status: b.status, file_created: !!b.file_created }).eq('id', b.id); alert("Saved!"); sync(); }}>⚙️</button></td>
                 <td><button onClick={async () => { await supabase.from('baggage_record').delete().eq('id', b.id); sync(); }}>X</button></td>
