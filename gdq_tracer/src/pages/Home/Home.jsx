@@ -107,7 +107,7 @@ export default function Home() {
     <div style={{ padding: '8px', fontFamily: 'sans-serif', maxWidth: '1200px', margin: '0 auto', fontSize: '11px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #eee', marginBottom: '5px' }}>
         <h3>🧳GDQ TRACER ({agents[usr] || '...'})</h3>
-        <h1>TESTING STYLES HERE</h1>
+    
         <button onClick={() => nav('/')} style={{ background: '#dc3545', color: '#fff', border: 'none', padding: '4px 10px', borderRadius: '4px' }}>Logout</button>
       </div>
 
