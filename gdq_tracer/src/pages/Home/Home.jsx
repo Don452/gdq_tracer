@@ -38,7 +38,15 @@ export default function Home() {
     sync();
   };
 
-  // 🔍 FIXED: Pure, clock-independent string matching that syncs backend data to your screen natively
+  // Helper tool: Converts a raw database 'YYYY-MM-DD' text slice into a clean local display string (MM/DD/YYYY)
+  const fmtDate = (isoStr) => {
+    if (!isoStr) return '-';
+    const parts = isoStr.substring(0, 10).split('-'); // splits into [YYYY, MM, DD]
+    if (parts.length !== 3) return isoStr;
+    return `${parts[1]}/${parts[2]}/${parts[0]}`; // returns MM/DD/YYYY format
+  };
+
+  // 🔍 Centralized calculation engine that updates BOTH your screen and your print manifests flawlessly
   const getFilt = () => bags.filter(b => {
     const em = (b.registered_by || '').toLowerCase().trim();
     
@@ -52,19 +60,41 @@ export default function Home() {
     return matchesDate && matchesStatus && matchesAgent;
   });
 
+  // 🖨️ Centralized print manifest layout compositor
   const print = () => {
     const list = getFilt(); if (!list.length) return alert("No records match your selected operational boundaries.");
     const w = window.open('', '_blank');
-    w.document.write(`<h2>Baggage Manifest Report</h2><table border="1" style="width:100%;border-collapse:collapse;font-size:12px;font-family:sans-serif;"><tr style="background:#f4f4f4;"><th>Tag</th><th>Ticket</th><th>Passenger Name</th><th>Phone Number</th><th>Status</th><th>Agent</th></tr>${list.map(b => { const em = (b.registered_by || '').toLowerCase().trim(); return `<tr><td><b>${b.tag_number || '-'}</b></td><td>${b.ticket_number || '-'}</td><td>${b.passenger_first_name || ''} ${b.passenger_last_name || ''}</td><td>${b.passenger_phone || '-'}</td><td>${b.status || '-'}</td><td>${agents[em] || em.substring(0,2).toUpperCase()}</td></tr>`; }).join('')}</table><script>setTimeout(()=>{window.print();window.close();},300);</script>`);
+    w.document.write(`
+      <h2>Baggage Manifest Report</h2>
+      <table border="1" style="width:100%;border-collapse:collapse;font-size:12px;font-family:sans-serif;">
+        <tr style="background:#f4f4f4;font-weight:bold;">
+          <th>Tag</th><th>Ticket</th><th>Passenger Name</th><th>Phone Number</th><th>Date Logged</th><th>Status</th><th>Agent</th>
+        </tr>
+        ${list.map(b => { 
+          const em = (b.registered_by || '').toLowerCase().trim(); 
+          return `<tr>
+            <td><b>${b.tag_number || '-'}</b></td>
+            <td>${b.ticket_number || '-'}</td>
+            <td>${b.passenger_first_name || ''} ${b.passenger_last_name || ''}</td>
+            <td>${b.passenger_phone || '-'}</td>
+            <td>${fmtDate(b.created_at)}</td> <!-- 📆 Print table column updated to display format -->
+            <td>${b.status || '-'}</td>
+            <td>${agents[em] || em.substring(0,2).toUpperCase()}</td>
+          </tr>`; 
+        }).join('')}
+      </table>
+      <script>setTimeout(()=>{window.print();window.close();},300);</script>
+    `);
     w.document.close();
   };
 
-  // 🔍 FIXED: Restores identical string-slicing logic on your main visible visual spreadsheet grid table
+  // 🔍 Main UI visible table grid filters 
   const fd = bags.filter(b => {
     const dbDateStr = b.created_at ? b.created_at.substring(0, 10) : '';
     const matchesSearch = [b.tag_number, b.ticket_number, b.passenger_first_name, b.passenger_last_name].some(v => (v || '').toLowerCase().includes(sch.toLowerCase()));
     return matchesSearch && (flt === 'All' || b.status === flt) && (!pDt || dbDateStr === pDt);
   });
+
 
 
 
