@@ -37,16 +37,15 @@ export default function Home() {
     setRows([{ id: Date.now(), tag: '', tkt: '', first: '', last: '', phone: '', status: 'Open' }]);
     sync();
   };
-  // 🔍 FIXED: Converts global server timestamps into your precise local timeline layout before filtering
+
+  // 🔍 FIXED: Pure, clock-independent string matching that syncs backend data to your screen natively
   const getFilt = () => bags.filter(b => {
     const em = (b.registered_by || '').toLowerCase().trim();
     
-    // Convert the database timestamp safely into your computer's local calendar format (YYYY-MM-DD)
-    const localDateStr = b.created_at 
-      ? new Date(b.created_at).toLocaleDateString('en-CA') 
-      : '';
+    // Extracts the precise server-side 'YYYY-MM-DD' date string directly from the text storage cell
+    const dbDateStr = b.created_at ? b.created_at.substring(0, 10) : '';
     
-    const matchesDate = !pDt || localDateStr === pDt;
+    const matchesDate = !pDt || dbDateStr === pDt;
     const matchesStatus = pSt === 'All' || b.status === pSt;
     const matchesAgent = pAg === 'All' || !pAg || agents[em] === pAg;
     
@@ -54,17 +53,17 @@ export default function Home() {
   });
 
   const print = () => {
-    const list = getFilt(); if (!list.length) return alert("No operational records match your selected criteria.");
+    const list = getFilt(); if (!list.length) return alert("No records match your selected operational boundaries.");
     const w = window.open('', '_blank');
     w.document.write(`<h2>Baggage Manifest Report</h2><table border="1" style="width:100%;border-collapse:collapse;font-size:12px;font-family:sans-serif;"><tr style="background:#f4f4f4;"><th>Tag</th><th>Ticket</th><th>Passenger Name</th><th>Phone Number</th><th>Status</th><th>Agent</th></tr>${list.map(b => { const em = (b.registered_by || '').toLowerCase().trim(); return `<tr><td><b>${b.tag_number || '-'}</b></td><td>${b.ticket_number || '-'}</td><td>${b.passenger_first_name || ''} ${b.passenger_last_name || ''}</td><td>${b.passenger_phone || '-'}</td><td>${b.status || '-'}</td><td>${agents[em] || em.substring(0,2).toUpperCase()}</td></tr>`; }).join('')}</table><script>setTimeout(()=>{window.print();window.close();},300);</script>`);
     w.document.close();
   };
 
-  // 🔍 FIXED: Restores local timezone rendering rules on your main visual spreadsheet table grid
+  // 🔍 FIXED: Restores identical string-slicing logic on your main visible visual spreadsheet grid table
   const fd = bags.filter(b => {
-    const localDateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('en-CA') : '';
+    const dbDateStr = b.created_at ? b.created_at.substring(0, 10) : '';
     const matchesSearch = [b.tag_number, b.ticket_number, b.passenger_first_name, b.passenger_last_name].some(v => (v || '').toLowerCase().includes(sch.toLowerCase()));
-    return matchesSearch && (flt === 'All' || b.status === flt) && (!pDt || localDateStr === pDt);
+    return matchesSearch && (flt === 'All' || b.status === flt) && (!pDt || dbDateStr === pDt);
   });
 
 
