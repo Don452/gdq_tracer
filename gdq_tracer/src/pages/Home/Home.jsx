@@ -100,7 +100,7 @@ export default function Home() {
     const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' })); a.download = `Report.csv`; document.body.appendChild(a); a.click(); a.remove();
   };
 
-  const fd = bags.filter(b => [b.tag_number, b.ticket_number, b.passenger_first_name, b.passenger_last_name].some(v => (v || '').toLowerCase().includes(sch.toLowerCase())) && (flt === 'All' || b.status === flt));
+  // const fd = bags.filter(b => [b.tag_number, b.ticket_number, b.passenger_first_name, b.passenger_last_name].some(v => (v || '').toLowerCase().includes(sch.toLowerCase())) && (flt === 'All' || b.status === flt));
   const tc = s => { const t = (s || '').trim().split(/[\s,]+/); return t.length <= 1 ? s : <span title={s.replace(/[\s,]+/g, ', ')} style={{ cursor: 'help', borderBottom: '1px dashed #2b6cb0', color: '#2b6cb0', fontWeight: 'bold' }}>{t[0]} (+{t.length - 1})</span>; };
 
   return (
