@@ -37,13 +37,15 @@ export default function Home() {
     setRows([{ id: Date.now(), tag: '', tkt: '', first: '', last: '', phone: '', status: 'Open' }]);
     sync();
   };
-
-    // 🔍 FIXED: Centralized calculation engine that updates BOTH your screen and your print manifests simultaneously
+  // 🔍 FIXED: Converts global server timestamps into your precise local timeline layout before filtering
   const getFilt = () => bags.filter(b => {
     const em = (b.registered_by || '').toLowerCase().trim();
-    const localDateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('en-CA') : '';
     
-    // Links your data streams directly onto your active drop down option pickers
+    // Convert the database timestamp safely into your computer's local calendar format (YYYY-MM-DD)
+    const localDateStr = b.created_at 
+      ? new Date(b.created_at).toLocaleDateString('en-CA') 
+      : '';
+    
     const matchesDate = !pDt || localDateStr === pDt;
     const matchesStatus = pSt === 'All' || b.status === pSt;
     const matchesAgent = pAg === 'All' || !pAg || agents[em] === pAg;
@@ -51,46 +53,21 @@ export default function Home() {
     return matchesDate && matchesStatus && matchesAgent;
   });
 
-  // 🔍 FIXED: Main UI visible table grid now listens to your text searches AND your option changes instantly
-  const fd = getFilt().filter(b => 
-    [b.tag_number, b.ticket_number, b.passenger_first_name, b.passenger_last_name].some(v => 
-      (v || '').toLowerCase().includes(sch.toLowerCase())
-    )
-  );
-
-
-     const print = () => {
-    const list = getFilt(); 
-    if (!list.length) return alert("No records match your filters.");
-    
+  const print = () => {
+    const list = getFilt(); if (!list.length) return alert("No operational records match your selected criteria.");
     const w = window.open('', '_blank');
-    w.document.write(`
-      <h2>Manifest Report</h2>
-      <table border="1" style="width:100%;border-collapse:collapse;font-size:12px;font-family:sans-serif;">
-        <tr style="background:#f4f4f4;font-weight:bold;">
-          <th style="padding:6px;">Tag</th>
-          <th style="padding:6px;">Ticket</th>
-          <th style="padding:6px;">Passenger Name</th>
-          <th style="padding:6px;">Phone Number</th>
-          <th style="padding:6px;">Status</th>
-          <th style="padding:6px;">Agent</th>
-        </tr>
-        ${list.map(b => { 
-          const em = (b.registered_by || '').toLowerCase().trim(); 
-          return `<tr>
-            <td style="padding:6px;"><b>${b.tag_number || '-'}</b></td>
-            <td style="padding:6px;font-family:monospace;">${b.ticket_number || '-'}</td>
-            <td style="padding:6px;">${b.passenger_last_name || ''} ${b.passenger_first_name || ''}</td>
-            <td style="padding:6px;">${b.passenger_phone || '-'}</td>
-            <td style="padding:6px;">${b.status || '-'}</td>
-            <td style="padding:6px;font-weight:bold;color:#2b6cb0;">${agents[em] || em.substring(0,2).toUpperCase()}</td>
-          </tr>`; 
-        }).join('')}
-      </table>
-      <script>setTimeout(()=>{window.print();window.close();},300);</script>
-    `);
+    w.document.write(`<h2>Baggage Manifest Report</h2><table border="1" style="width:100%;border-collapse:collapse;font-size:12px;font-family:sans-serif;"><tr style="background:#f4f4f4;"><th>Tag</th><th>Ticket</th><th>Passenger Name</th><th>Phone Number</th><th>Status</th><th>Agent</th></tr>${list.map(b => { const em = (b.registered_by || '').toLowerCase().trim(); return `<tr><td><b>${b.tag_number || '-'}</b></td><td>${b.ticket_number || '-'}</td><td>${b.passenger_first_name || ''} ${b.passenger_last_name || ''}</td><td>${b.passenger_phone || '-'}</td><td>${b.status || '-'}</td><td>${agents[em] || em.substring(0,2).toUpperCase()}</td></tr>`; }).join('')}</table><script>setTimeout(()=>{window.print();window.close();},300);</script>`);
     w.document.close();
   };
+
+  // 🔍 FIXED: Restores local timezone rendering rules on your main visual spreadsheet table grid
+  const fd = bags.filter(b => {
+    const localDateStr = b.created_at ? new Date(b.created_at).toLocaleDateString('en-CA') : '';
+    const matchesSearch = [b.tag_number, b.ticket_number, b.passenger_first_name, b.passenger_last_name].some(v => (v || '').toLowerCase().includes(sch.toLowerCase()));
+    return matchesSearch && (flt === 'All' || b.status === flt) && (!pDt || localDateStr === pDt);
+  });
+
+
 
 
   const excel = () => {
