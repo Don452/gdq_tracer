@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import './index.css'; // 👈 MAKE SURE THIS EXACT LINE IS PRESENT!
+import { supabase } from './supabaseClient'; // 👈 ADD THIS EXACT LINE HERE
+
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
