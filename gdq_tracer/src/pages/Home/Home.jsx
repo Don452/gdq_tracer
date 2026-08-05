@@ -38,12 +38,12 @@ export default function Home() {
     sync();
   };
 
-    // 📆 FIXED: Maps array index slots to output a clean MM/DD/YYYY format perfectly
+  // 📆 FIXED: Correctly extracts month, day, and year [0] array positions to return MM/DD/YYYY format
   const fmtDate = (isoStr) => {
     if (!isoStr) return '-';
-    const parts = isoStr.substring(0, 10).split('-'); // parts = [YYYY, MM, DD]
+    const parts = isoStr.substring(0, 10).split('-'); // splits into [YYYY, MM, DD]
     if (parts.length !== 3) return isoStr;
-    return `${parts[1]}/${parts[2]}/${parts[0]}`; // 💡 Month/Day/Year sequence
+    return `${parts[1]}/${parts[2]}/${parts[0]}`; // 💡 Returns Month/Day/Year perfectly
   };
 
   const getFilt = () => bags.filter(b => {
@@ -67,6 +67,7 @@ export default function Home() {
     const matchesSearch = [b.tag_number, b.ticket_number, b.passenger_first_name, b.passenger_last_name].some(v => (v || '').toLowerCase().includes(sch.toLowerCase()));
     return matchesSearch && (flt === 'All' || b.status === flt) && (!pDt || dbDateStr === pDt);
   });
+
 
   const excel = () => {
     const list = getFilt(); if (!list.length) return alert("No records.");
