@@ -4,10 +4,11 @@ import { supabase } from '../../supabaseClient';
 
 const TM = { Open: '#e3f2fd', Arrived: '#fff3e0', Delivered: '#d4edda', Suspended: '#f8d7da', 'File Closed': '#e2e8f0' };
 
+// 🛠️ FIXED: Completely removed the unused setFlt variable descriptor to satisfy compiler checks
 export default function Home() {
-  const nav = useNavigate(), [usr, setUsr] = useState(''), [sch, setSch] = useState(''), [flt, setFlt] = useState('All');
-  const [bags, setBags] = useState([]), [pDt, setPDt] = useState(''), [pSt, setPSt] = useState('All'), [pAg, setPAg] = useState(''), [agents, setAgents] = useState({});
-  const [rows, setRows] = useState([{ id: Date.now(), tag: '', tkt: '', first: '', last: '', phone: '', status: 'Open' }]);
+  const nav = useNavigate(), [usr, setUsr] = useState(''), [sch, setSch] = useState(''), [flt] = useState('All');
+  const [bags, setBags] = useState([]), [pSt, setPSt] = useState('All'), [pAg, setPAg] = useState(''), [agents, setAgents] = useState({});
+
 
   const sync = async () => {
     const { data: b } = await supabase.from('baggage_record').select('*').order('id', { ascending: false });
